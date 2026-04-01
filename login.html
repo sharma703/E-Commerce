@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In – Megacart</title>
+  <meta name="description" content="Sign in to your Megacart account or create a new account to start shopping." />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── CSS Reset & Base ───────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --mc-dark:        #131921;
+      --mc-dark2:       #232f3e;
+      --mc-orange:      #ff9900;
+      --mc-orange-h:    #f3a847;
+      --mc-orange-dark: #e47911;
+      --mc-white:       #ffffff;
+      --mc-bg:          #eaeded;
+      --mc-text:        #0f1111;
+      --mc-muted:       #565959;
+      --mc-border:      #ddd;
+      --mc-red:         #cc0c39;
+      --mc-green:       #007600;
+      --mc-blue:        #007185;
+      --mc-yellow:      #ffd814;
+      --mc-radius:      8px;
+      --mc-shadow:      0 2px 8px rgba(0,0,0,.12);
+      --mc-shadow-lg:   0 8px 48px rgba(0,0,0,.22);
+      --mc-transition:  all 0.22s ease;
+    }
+
+    body {
+      font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+      font-size: 14px;
+      background: var(--mc-bg);
+      color: var(--mc-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; font-family: inherit; }
+    img { max-width: 100%; display: block; }
+    input { font-family: inherit; }
+
+    /* ── Header ─────────────────────────────────────── */
+    .auth-header {
+      background: var(--mc-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.4);
+    }
+    .header-logo {
+      display: flex;
+      align-items: flex-end;
+      gap: 1px;
+      text-decoration: none;
+    }
+    .logo-text {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--mc-white);
+      letter-spacing: -0.5px;
+      font-style: italic;
+    }
+    .logo-dot {
+      font-size: 13px;
+      color: var(--mc-orange);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    /* ── Main Layout ─────────────────────────────────── */
+    .auth-page-body {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 28px 16px 48px;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(255,153,0,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(19,25,33,0.08) 0%, transparent 60%),
+        var(--mc-bg);
+    }
+
+    /* ── Auth Card ───────────────────────────────────── */
+    .auth-card {
+      background: var(--mc-white);
+      border-radius: 10px;
+      border: 1px solid #d5d9d9;
+      padding: 32px 36px 28px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+      animation: cardIn 0.35s cubic-bezier(.4,0,.2,1) both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(18px) scale(.97); }
+      to   { opacity: 1; transform: translateY(0)   scale(1); }
+    }
+
+    /* ── Tab Navigation ──────────────────────────────── */
+    .auth-tabs {
+      display: flex;
+      border-radius: 6px;
+      background: #f0f2f2;
+      padding: 4px;
+      margin-bottom: 24px;
+      gap: 4px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 9px 10px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--mc-muted);
+      transition: var(--mc-transition);
+      text-align: center;
+    }
+    .auth-tab.active {
+      background: var(--mc-white);
+      color: var(--mc-text);
+      box-shadow: 0 1px 4px rgba(0,0,0,.12);
+    }
+    .auth-tab:hover:not(.active) { color: var(--mc-text); }
+
+    /* ── Section Title ───────────────────────────────── */
+    .auth-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--mc-text);
+      margin-bottom: 6px;
+    }
+    .auth-subtitle {
+      font-size: 13px;
+      color: var(--mc-muted);
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+
+    /* ── Welcome Banner (shown when logged in) ────────── */
+    .welcome-banner {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+      padding: 10px 0 24px;
+      animation: cardIn 0.3s ease both;
+    }
+    .welcome-banner.visible { display: flex; }
+    .welcome-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--mc-dark2), var(--mc-orange));
+      color: var(--mc-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 700;
+      box-shadow: 0 4px 16px rgba(255,153,0,.3);
+    }
+    .welcome-name { font-size: 20px; font-weight: 700; }
+    .welcome-email { font-size: 13px; color: var(--mc-muted); }
+    .welcome-actions { display: flex; flex-direction: column; gap: 10px; width: 100%; margin-top: 8px; }
+
+    /* ── View Panels ─────────────────────────────────── */
+    .auth-view { display: none; }
+    .auth-view.active { display: block; animation: fadeView 0.25s ease both; }
+    @keyframes fadeView {
+      from { opacity: 0; transform: translateX(8px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ── Form Fields ─────────────────────────────────── */
+    .auth-field {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 14px;
+    }
+    .auth-field label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--mc-text);
+    }
+    .auth-input {
+      padding: 9px 12px;
+      border: 1px solid #c4c4c4;
+      border-radius: 4px;
+      font-size: 14px;
+      color: var(--mc-text);
+      background: var(--mc-white);
+      width: 100%;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .auth-input:focus {
+      outline: none;
+      border-color: #e77600;
+      box-shadow: 0 0 0 3px rgba(231,118,0,.18);
+    }
+    .auth-input.error {
+      border-color: var(--mc-red);
+    }
+    .auth-input.success {
+      border-color: var(--mc-green);
+    }
+
+    /* Password field */
+    .password-wrap {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid #c4c4c4;
+      border-radius: 4px;
+      overflow: hidden;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .password-wrap:focus-within {
+      border-color: #e77600;
+      box-shadow: 0 0 0 3px rgba(231,118,0,.18);
+    }
+    .password-wrap.error { border-color: var(--mc-red); }
+    .password-wrap .auth-input {
+      border: none;
+      flex: 1;
+      border-radius: 0;
+      box-shadow: none !important;
+    }
+    .toggle-pwd-btn {
+      background: #f8f9fa;
+      border: none;
+      border-left: 1px solid #ddd;
+      padding: 0 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--mc-blue);
+      white-space: nowrap;
+      transition: var(--mc-transition);
+      flex-shrink: 0;
+    }
+    .toggle-pwd-btn:hover { background: #e8f4fd; }
+
+    /* Password strength meter (for register) */
+    .strength-bar {
+      display: flex;
+      gap: 3px;
+      margin-top: 4px;
+    }
+    .strength-segment {
+      height: 4px;
+      flex: 1;
+      border-radius: 2px;
+      background: #e0e0e0;
+      transition: background 0.3s ease;
+    }
+    .strength-label {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 2px;
+      min-height: 14px;
+    }
+    .strength-label.weak   { color: var(--mc-red); }
+    .strength-label.fair   { color: #ff8c00; }
+    .strength-label.good   { color: #f0a500; }
+    .strength-label.strong { color: var(--mc-green); }
+
+    /* Inline errors */
+    .field-error {
+      font-size: 12px;
+      color: var(--mc-red);
+      min-height: 16px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .field-error:not(:empty)::before { content: "⚠"; }
+
+    /* ── Submit Button ────────────────────────────────── */
+    .auth-submit-btn {
+      width: 100%;
+      padding: 11px;
+      background: var(--mc-yellow);
+      border: 1px solid #f0c14b;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--mc-text);
+      margin-top: 6px;
+      transition: var(--mc-transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-submit-btn:hover {
+      background: #f0c14b;
+      box-shadow: 0 2px 8px rgba(0,0,0,.14);
+    }
+    .auth-submit-btn:active { transform: scale(.98); }
+
+    /* Loading state */
+    .auth-submit-btn.loading {
+      pointer-events: none;
+      opacity: .8;
+    }
+    .auth-submit-btn .btn-spinner {
+      display: none;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(0,0,0,.3);
+      border-top-color: var(--mc-text);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    .auth-submit-btn.loading .btn-spinner { display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Terms ───────────────────────────────────────── */
+    .auth-terms {
+      font-size: 11px;
+      color: var(--mc-muted);
+      margin: 12px 0 16px;
+      line-height: 1.6;
+    }
+    .auth-terms a { color: var(--mc-blue); }
+    .auth-terms a:hover { text-decoration: underline; color: #c45500; }
+
+    /* ── Divider ─────────────────────────────────────── */
+    .auth-divider {
+      text-align: center;
+      position: relative;
+      margin: 18px 0 14px;
+    }
+    .auth-divider::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0; right: 0;
+      height: 1px;
+      background: #e0e0e0;
+    }
+    .auth-divider span {
+      background: var(--mc-white);
+      padding: 0 14px;
+      position: relative;
+      font-size: 12px;
+      color: var(--mc-muted);
+      font-weight: 500;
+    }
+
+    /* ── Social Login Buttons ─────────────────────────── */
+    .social-btn {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d0d0d0;
+      border-radius: 4px;
+      background: var(--mc-white);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--mc-text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      transition: var(--mc-transition);
+    }
+    .social-btn:hover { background: #f8f8f8; border-color: #aaa; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+    .social-btn i { font-size: 16px; }
+    .social-google i { color: #ea4335; }
+    .social-facebook i { color: #1877f2; }
+
+    /* ── Forgot Password ─────────────────────────────── */
+    .forgot-link {
+      display: block;
+      text-align: right;
+      font-size: 12px;
+      color: var(--mc-blue);
+      margin-bottom: 14px;
+      margin-top: -8px;
+    }
+    .forgot-link:hover { text-decoration: underline; color: #c45500; }
+
+    /* ── Logout Button ───────────────────────────────── */
+    .btn-logout {
+      width: 100%;
+      padding: 10px;
+      background: #f0f2f2;
+      border: 1px solid #d5d9d9;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--mc-red);
+      transition: var(--mc-transition);
+    }
+    .btn-logout:hover { background: #fff0f0; border-color: var(--mc-red); }
+
+    /* ── "Go to Shop" button ─────────────────────────── */
+    .btn-shop {
+      width: 100%;
+      padding: 10px;
+      background: var(--mc-yellow);
+      border: 1px solid #f0c14b;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--mc-text);
+      transition: var(--mc-transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-shop:hover { background: #f0c14b; }
+
+    /* ── Remember Me ─────────────────────────────────── */
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .remember-row input[type="checkbox"] {
+      width: 16px; height: 16px;
+      accent-color: var(--mc-orange);
+      cursor: pointer;
+    }
+    .remember-row label {
+      font-size: 13px;
+      color: var(--mc-muted);
+      cursor: pointer;
+    }
+
+    /* ── Footer Links ────────────────────────────────── */
+    .auth-footer {
+      background: linear-gradient(to bottom, transparent, #f0f2f2);
+      border-top: 1px solid #d5d9d9;
+      text-align: center;
+      padding: 20px 16px;
+      margin-top: auto;
+    }
+    .auth-footer-links {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px 20px;
+      margin-bottom: 10px;
+    }
+    .auth-footer-links a {
+      font-size: 12px;
+      color: var(--mc-blue);
+      transition: var(--mc-transition);
+    }
+    .auth-footer-links a:hover { color: #c45500; text-decoration: underline; }
+    .auth-footer-copy {
+      font-size: 12px;
+      color: var(--mc-muted);
+    }
+
+    /* ── Toast ───────────────────────────────────────── */
+    .lp-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      min-width: 280px;
+      max-width: 90vw;
+      background: #333;
+      color: var(--mc-white);
+      padding: 14px 22px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.25);
+    }
+    .lp-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: all;
+    }
+    .lp-toast.success { border-left: 4px solid var(--mc-orange); }
+    .lp-toast.error   { border-left: 4px solid var(--mc-red); }
+    .lp-toast i { font-size: 18px; flex-shrink: 0; }
+    .lp-toast.success i { color: var(--mc-orange); }
+    .lp-toast.error   i { color: var(--mc-red); }
+
+    /* ── Password requirements ───────────────────────── */
+    .pwd-requirements {
+      display: none;
+      margin-top: 6px;
+      padding: 10px 12px;
+      background: #f8f9fa;
+      border-radius: 4px;
+      border: 1px solid #e5e5e5;
+      gap: 4px;
+      flex-direction: column;
+    }
+    .pwd-requirements.visible { display: flex; }
+    .pwd-req-item {
+      font-size: 12px;
+      color: var(--mc-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s ease;
+    }
+    .pwd-req-item i { font-size: 13px; transition: color 0.2s ease; }
+    .pwd-req-item.met { color: var(--mc-green); }
+    .pwd-req-item.met i { color: var(--mc-green); }
+
+    /* ── Responsive ──────────────────────────────────── */
+    @media (max-width: 480px) {
+      .auth-card { padding: 24px 20px 20px; border-radius: 0; border-left: none; border-right: none; }
+      .auth-page-body { padding: 0 0 40px; background: var(--mc-white); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ───────────────────────────────────────── -->
+  <header class="auth-header">
+    <a href="index.html" class="header-logo">
+      <span class="logo-text">megacart</span>
+      <span class="logo-dot">.in</span>
+    </a>
+  </header>
+
+  <!-- ── Main Auth Page ────────────────────────────────── -->
+  <main class="auth-page-body">
+    <div class="auth-card">
+
+      <!-- Logged-in Welcome Banner -->
+      <div class="welcome-banner" id="welcomeBanner">
+        <div class="welcome-avatar" id="welcomeAvatar">U</div>
+        <div>
+          <p class="welcome-name" id="welcomeName">User</p>
+          <p class="welcome-email" id="welcomeEmail"></p>
+        </div>
+        <div class="welcome-actions">
+          <a href="index.html" class="btn-shop">
+            <i class="bi bi-shop"></i> Continue Shopping
+          </a>
+          <button class="btn-logout" id="logoutBtnPage">
+            <i class="bi bi-box-arrow-right me-2"></i>Sign Out
+          </button>
+        </div>
+      </div>
+
+      <!-- Auth Forms (shown when logged out) -->
+      <div id="authForms">
+        <!-- Tabs -->
+        <div class="auth-tabs" role="tablist">
+          <button class="auth-tab active" id="tabLogin" role="tab" aria-selected="true" aria-controls="loginView">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+          </button>
+          <button class="auth-tab" id="tabRegister" role="tab" aria-selected="false" aria-controls="registerView">
+            <i class="bi bi-person-plus me-1"></i>Create Account
+          </button>
+        </div>
+
+        <!-- ════ LOGIN VIEW ════ -->
+        <div class="auth-view active" id="loginView" role="tabpanel">
+          <h1 class="auth-title">Welcome back</h1>
+          <p class="auth-subtitle">Sign in to access your orders, wishlist, and more.</p>
+
+          <form id="loginForm" novalidate>
+
+            <div class="auth-field">
+              <label for="loginEmail">Email or mobile number</label>
+              <input
+                type="text"
+                id="loginEmail"
+                class="auth-input"
+                placeholder="you@example.com or +91 XXXXX XXXXX"
+                autocomplete="email"
+                inputmode="email"
+              />
+              <span class="field-error" id="loginEmailError"></span>
+            </div>
+
+            <div class="auth-field">
+              <label for="loginPassword">Password</label>
+              <div class="password-wrap" id="loginPwdWrap">
+                <input
+                  type="password"
+                  id="loginPassword"
+                  class="auth-input"
+                  placeholder="Enter your password"
+                  autocomplete="current-password"
+                />
+                <button type="button" class="toggle-pwd-btn" data-target="loginPassword" aria-label="Toggle password visibility">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+              <span class="field-error" id="loginPasswordError"></span>
+            </div>
+
+            <a href="#" class="forgot-link" id="forgotLink">Forgot your password?</a>
+
+            <div class="remember-row">
+              <input type="checkbox" id="rememberMe" />
+              <label for="rememberMe">Keep me signed in</label>
+            </div>
+
+            <button type="submit" class="auth-submit-btn" id="loginSubmitBtn">
+              <span class="btn-spinner"></span>
+              <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+            </button>
+
+            <p class="auth-terms">
+              By continuing, you agree to Megacart's
+              <a href="#">Conditions of Use</a> and <a href="#">Privacy Notice</a>.
+            </p>
+          </form>
+
+          <div class="auth-divider"><span>or sign in with</span></div>
+
+          <button class="social-btn social-google" id="googleLoginBtn">
+            <i class="bi bi-google"></i> Continue with Google
+          </button>
+          <button class="social-btn social-facebook" id="facebookLoginBtn">
+            <i class="bi bi-facebook"></i> Continue with Facebook
+          </button>
+
+        </div><!-- /loginView -->
+
+        <!-- ════ REGISTER VIEW ════ -->
+        <div class="auth-view" id="registerView" role="tabpanel">
+          <h1 class="auth-title">Create account</h1>
+          <p class="auth-subtitle">Join millions of happy shoppers on Megacart.</p>
+
+          <form id="registerForm" novalidate>
+
+            <div class="auth-field">
+              <label for="regName">Your full name</label>
+              <input
+                type="text"
+                id="regName"
+                class="auth-input"
+                placeholder="First and last name"
+                autocomplete="name"
+              />
+              <span class="field-error" id="regNameError"></span>
+            </div>
+
+            <div class="auth-field">
+              <label for="regEmail">Mobile number or email</label>
+              <input
+                type="text"
+                id="regEmail"
+                class="auth-input"
+                placeholder="you@example.com or +91 XXXXX XXXXX"
+                autocomplete="email"
+                inputmode="email"
+              />
+              <span class="field-error" id="regEmailError"></span>
+            </div>
+
+            <div class="auth-field">
+              <label for="regPassword">Password</label>
+              <div class="password-wrap" id="regPwdWrap">
+                <input
+                  type="password"
+                  id="regPassword"
+                  class="auth-input"
+                  placeholder="At least 6 characters"
+                  autocomplete="new-password"
+                />
+                <button type="button" class="toggle-pwd-btn" data-target="regPassword" aria-label="Toggle password visibility">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+              <div class="strength-bar" id="strengthBar">
+                <div class="strength-segment" id="seg1"></div>
+                <div class="strength-segment" id="seg2"></div>
+                <div class="strength-segment" id="seg3"></div>
+                <div class="strength-segment" id="seg4"></div>
+              </div>
+              <span class="strength-label" id="strengthLabel"></span>
+              <div class="pwd-requirements" id="pwdRequirements">
+                <div class="pwd-req-item" id="req-length">
+                  <i class="bi bi-x-circle-fill"></i> At least 6 characters
+                </div>
+                <div class="pwd-req-item" id="req-upper">
+                  <i class="bi bi-x-circle-fill"></i> One uppercase letter
+                </div>
+                <div class="pwd-req-item" id="req-number">
+                  <i class="bi bi-x-circle-fill"></i> One number
+                </div>
+              </div>
+              <span class="field-error" id="regPasswordError"></span>
+            </div>
+
+            <div class="auth-field">
+              <label for="regConfirm">Re-enter password</label>
+              <div class="password-wrap" id="regConfirmWrap">
+                <input
+                  type="password"
+                  id="regConfirm"
+                  class="auth-input"
+                  placeholder="Repeat your password"
+                  autocomplete="new-password"
+                />
+                <button type="button" class="toggle-pwd-btn" data-target="regConfirm" aria-label="Toggle confirm password visibility">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+              <span class="field-error" id="regConfirmError"></span>
+            </div>
+
+            <button type="submit" class="auth-submit-btn" id="registerSubmitBtn">
+              <span class="btn-spinner"></span>
+              <i class="bi bi-person-check me-1"></i>Create your Megacart account
+            </button>
+
+            <p class="auth-terms">
+              By creating an account, you agree to Megacart's
+              <a href="#">Conditions of Use</a> and <a href="#">Privacy Notice</a>.
+            </p>
+          </form>
+
+          <div class="auth-divider"><span>or sign up with</span></div>
+
+          <button class="social-btn social-google">
+            <i class="bi bi-google"></i> Sign up with Google
+          </button>
+          <button class="social-btn social-facebook">
+            <i class="bi bi-facebook"></i> Sign up with Facebook
+          </button>
+
+        </div><!-- /registerView -->
+      </div><!-- /#authForms -->
+
+    </div><!-- /.auth-card -->
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────── -->
+  <footer class="auth-footer">
+    <div class="auth-footer-links">
+      <a href="#">Conditions of Use</a>
+      <a href="#">Privacy Notice</a>
+      <a href="#">Help</a>
+    </div>
+    <p class="auth-footer-copy">&copy; 2024–2025 Megacart.in, Inc. All rights reserved.</p>
+  </footer>
+
+  <!-- ── Toast ─────────────────────────────────────────── -->
+  <div class="lp-toast" id="pageToast">
+    <i class="bi bi-check-circle-fill"></i>
+    <span id="pageToastMsg"></span>
+  </div>
+
+  <script>
+  /* ──────────────────────────────────────────────────────
+     CONSTANTS & STATE
+  ────────────────────────────────────────────────────── */
+  const AUTH_KEY  = "megacart_user_v1";
+  const USERS_KEY = "megacart_users_v1";
+
+  /* ──────────────────────────────────────────────────────
+     STORAGE HELPERS
+  ────────────────────────────────────────────────────── */
+  function getUser() {
+    try { return JSON.parse(localStorage.getItem(AUTH_KEY)) || null; }
+    catch { return null; }
+  }
+  function saveUser(user) {
+    localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+  }
+  function clearUser() {
+    localStorage.removeItem(AUTH_KEY);
+  }
+  function getUsers() {
+    try { return JSON.parse(localStorage.getItem(USERS_KEY)) || []; }
+    catch { return []; }
+  }
+  function saveUsers(users) {
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  }
+
+  /* ──────────────────────────────────────────────────────
+     TOAST
+  ────────────────────────────────────────────────────── */
+  function showToast(msg, type = "success") {
+    const el  = document.getElementById("pageToast");
+    const txt = document.getElementById("pageToastMsg");
+    const ico = el.querySelector("i");
+    txt.textContent = msg;
+    el.className = "lp-toast " + type + " show";
+    ico.className = type === "success"
+      ? "bi bi-check-circle-fill"
+      : "bi bi-exclamation-circle-fill";
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove("show"), 3200);
+  }
+
+  /* ──────────────────────────────────────────────────────
+     REDIRECT HELPER
+  ────────────────────────────────────────────────────── */
+  function getRedirectTarget() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('redirect') || 'index.html';
+  }
+
+  /* ──────────────────────────────────────────────────────
+     AUTH UI STATE
+  ────────────────────────────────────────────────────── */
+  function renderAuthState() {
+    const user = getUser();
+    const banner    = document.getElementById('welcomeBanner');
+    const authForms = document.getElementById('authForms');
+
+    if (user) {
+      // Already logged in → redirect straight to the store
+      window.location.replace(getRedirectTarget());
+    } else {
+      banner.classList.remove('visible');
+      authForms.style.display = 'block';
+    }
+  }
+
+  /* ──────────────────────────────────────────────────────
+     TABS
+  ────────────────────────────────────────────────────── */
+  const tabLogin    = document.getElementById("tabLogin");
+  const tabRegister = document.getElementById("tabRegister");
+  const loginView   = document.getElementById("loginView");
+  const registerView = document.getElementById("registerView");
+
+  function switchTab(tab) {
+    if (tab === "login") {
+      tabLogin.classList.add("active");
+      tabRegister.classList.remove("active");
+      loginView.classList.add("active");
+      registerView.classList.remove("active");
+      tabLogin.setAttribute("aria-selected", "true");
+      tabRegister.setAttribute("aria-selected", "false");
+      clearErrors();
+      setTimeout(() => document.getElementById("loginEmail")?.focus(), 50);
+    } else {
+      tabRegister.classList.add("active");
+      tabLogin.classList.remove("active");
+      registerView.classList.add("active");
+      loginView.classList.remove("active");
+      tabRegister.setAttribute("aria-selected", "true");
+      tabLogin.setAttribute("aria-selected", "false");
+      clearErrors();
+      setTimeout(() => document.getElementById("regName")?.focus(), 50);
+    }
+  }
+
+  tabLogin.addEventListener("click",    () => switchTab("login"));
+  tabRegister.addEventListener("click", () => switchTab("register"));
+
+  /* ──────────────────────────────────────────────────────
+     VALIDATION HELPERS
+  ────────────────────────────────────────────────────── */
+  function clearErrors() {
+    document.querySelectorAll(".field-error").forEach(el => el.textContent = "");
+    document.querySelectorAll(".auth-input").forEach(el => el.classList.remove("error", "success"));
+    document.querySelectorAll(".password-wrap").forEach(el => el.classList.remove("error"));
+  }
+
+  function setError(inputId, wrapId, errorId, msg) {
+    const input = document.getElementById(inputId);
+    const wrap  = wrapId ? document.getElementById(wrapId) : null;
+    const err   = document.getElementById(errorId);
+    if (wrap) wrap.classList.add("error");
+    else if (input) input.classList.add("error");
+    if (err) err.textContent = msg;
+    return false;
+  }
+
+  function isValidContact(v) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) ||
+           /^[6-9]\d{9}$/.test(v.replace(/[\s\-+]/g, ""));
+  }
+
+  /* ──────────────────────────────────────────────────────
+     PASSWORD STRENGTH METER
+  ────────────────────────────────────────────────────── */
+  const COLORS = ["#cc0c39", "#ff8c00", "#f0a500", "#007600"];
+  const LABELS = ["Weak", "Fair", "Good", "Strong"];
+
+  function getStrength(pwd) {
+    let score = 0;
+    if (pwd.length >= 6)  score++;
+    if (pwd.length >= 10) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/[0-9]/.test(pwd)) score++;
+    if (/[^A-Za-z0-9]/.test(pwd)) score++;
+    return Math.min(Math.ceil(score * 4 / 5), 4);
+  }
+
+  function updateStrength(pwd) {
+    const segs  = ["seg1","seg2","seg3","seg4"].map(id => document.getElementById(id));
+    const label = document.getElementById("strengthLabel");
+    const req   = document.getElementById("pwdRequirements");
+
+    if (!pwd) {
+      segs.forEach(s => s.style.background = "#e0e0e0");
+      label.textContent = "";
+      label.className   = "strength-label";
+      req.classList.remove("visible");
+      return;
+    }
+
+    req.classList.add("visible");
+    const strength = getStrength(pwd);
+    const color    = COLORS[strength - 1] || "#e0e0e0";
+
+    segs.forEach((s, i) => {
+      s.style.background = i < strength ? color : "#e0e0e0";
+    });
+
+    label.textContent = LABELS[strength - 1] || "";
+    label.className   = "strength-label " + ["","weak","fair","good","strong"][strength];
+
+    // Requirements
+    const reqLen   = document.getElementById("req-length");
+    const reqUpper = document.getElementById("req-upper");
+    const reqNum   = document.getElementById("req-number");
+
+    toggleReq(reqLen,   pwd.length >= 6);
+    toggleReq(reqUpper, /[A-Z]/.test(pwd));
+    toggleReq(reqNum,   /[0-9]/.test(pwd));
+  }
+
+  function toggleReq(el, met) {
+    if (!el) return;
+    el.classList.toggle("met", met);
+    el.querySelector("i").className = met ? "bi bi-check-circle-fill" : "bi bi-x-circle-fill";
+  }
+
+  document.getElementById("regPassword").addEventListener("input", e => {
+    updateStrength(e.target.value);
+  });
+
+  /* ──────────────────────────────────────────────────────
+     PASSWORD SHOW / HIDE
+  ────────────────────────────────────────────────────── */
+  document.querySelectorAll(".toggle-pwd-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const input = document.getElementById(btn.dataset.target);
+      if (!input) return;
+      const isHidden = input.type === "password";
+      input.type = isHidden ? "text" : "password";
+      btn.querySelector("i").className = isHidden ? "bi bi-eye-slash" : "bi bi-eye";
+      btn.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
+    });
+  });
+
+  /* ──────────────────────────────────────────────────────
+     SUBMIT LOADING STATE
+  ────────────────────────────────────────────────────── */
+  function setLoading(btnId, on) {
+    const btn = document.getElementById(btnId);
+    if (!btn) return;
+    btn.classList.toggle("loading", on);
+  }
+
+  /* ──────────────────────────────────────────────────────
+     LOGIN HANDLER
+  ────────────────────────────────────────────────────── */
+  document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    clearErrors();
+
+    const email    = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    let valid = true;
+
+    if (!email) {
+      setError("loginEmail", null, "loginEmailError", "Enter your email or mobile number.");
+      valid = false;
+    } else if (!isValidContact(email)) {
+      setError("loginEmail", null, "loginEmailError", "Enter a valid email or 10-digit mobile number.");
+      valid = false;
+    }
+    if (!password) {
+      setError("loginPassword", "loginPwdWrap", "loginPasswordError", "Enter your password.");
+      valid = false;
+    } else if (password.length < 6) {
+      setError("loginPassword", "loginPwdWrap", "loginPasswordError", "Minimum 6 characters required.");
+      valid = false;
+    }
+    if (!valid) return;
+
+    setLoading("loginSubmitBtn", true);
+
+    // Simulate async request
+    await new Promise(r => setTimeout(r, 700));
+
+    const users = getUsers();
+    const match = users.find(u => u.email === email);
+
+    if (match && match.password !== password) {
+      setLoading("loginSubmitBtn", false);
+      setError("loginPassword", "loginPwdWrap", "loginPasswordError", "Incorrect password. Please try again.");
+      document.getElementById("loginPassword").value = "";
+      return;
+    }
+
+    // Derive name from email if not registered
+    const firstName = email.split("@")[0].replace(/[._\-]/g, " ")
+                          .split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+    const user = match || { name: firstName, email };
+    saveUser(user);
+
+    setLoading('loginSubmitBtn', false);
+
+    // Mark input as success
+    document.getElementById('loginEmail').classList.add('success');
+
+    showToast(`Welcome back, ${user.name.split(' ')[0]}! 🎉 Redirecting...`, 'success');
+    setTimeout(() => {
+      window.location.replace(getRedirectTarget());
+    }, 900);
+  });
+
+  /* ──────────────────────────────────────────────────────
+     REGISTER HANDLER
+  ────────────────────────────────────────────────────── */
+  document.getElementById("registerForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    clearErrors();
+
+    const name     = document.getElementById("regName").value.trim();
+    const email    = document.getElementById("regEmail").value.trim();
+    const password = document.getElementById("regPassword").value;
+    const confirm  = document.getElementById("regConfirm").value;
+    let valid = true;
+
+    if (!name || name.length < 2) {
+      setError("regName", null, "regNameError", "Enter your name (at least 2 characters).");
+      valid = false;
+    }
+    if (!email) {
+      setError("regEmail", null, "regEmailError", "Enter your mobile number or email.");
+      valid = false;
+    } else if (!isValidContact(email)) {
+      setError("regEmail", null, "regEmailError", "Enter a valid email or 10-digit mobile number.");
+      valid = false;
+    }
+    if (!password || password.length < 6) {
+      setError("regPassword", "regPwdWrap", "regPasswordError", "Password must be at least 6 characters.");
+      valid = false;
+    }
+    if (!confirm) {
+      setError("regConfirm", "regConfirmWrap", "regConfirmError", "Please re-enter your password.");
+      valid = false;
+    } else if (password !== confirm) {
+      setError("regConfirm", "regConfirmWrap", "regConfirmError", "Passwords do not match.");
+      valid = false;
+    }
+    if (!valid) return;
+
+    setLoading("registerSubmitBtn", true);
+    await new Promise(r => setTimeout(r, 800));
+
+    const users = getUsers();
+    if (users.find(u => u.email === email)) {
+      setLoading("registerSubmitBtn", false);
+      setError("regEmail", null, "regEmailError", "An account with this email already exists. Try signing in.");
+      return;
+    }
+
+    // Save new user
+    users.push({ name, email, password });
+    saveUsers(users);
+    saveUser({ name, email });
+
+    setLoading("registerSubmitBtn", false);
+    showToast(`Welcome to Megacart, ${name.split(" ")[0]}! Account created. 🎉 Redirecting...`, "success");
+    setTimeout(() => {
+      window.location.replace(getRedirectTarget());
+    }, 900);
+  });
+
+  /* ──────────────────────────────────────────────────────
+     LOGOUT
+  ────────────────────────────────────────────────────── */
+  document.getElementById('logoutBtnPage').addEventListener('click', () => {
+    clearUser();
+    showToast("You've been signed out.", 'success');
+    setTimeout(() => renderAuthState(), 600);
+  });
+
+  /* ──────────────────────────────────────────────────────
+     FORGOT PASSWORD
+  ────────────────────────────────────────────────────── */
+  document.getElementById("forgotLink").addEventListener("click", e => {
+    e.preventDefault();
+    const email = document.getElementById("loginEmail").value.trim();
+    if (!email) {
+      document.getElementById("loginEmail").focus();
+      showToast("Please enter your email first, then click Forgot Password.", "error");
+      return;
+    }
+    if (!isValidContact(email)) {
+      showToast("Enter a valid email address to reset your password.", "error");
+      return;
+    }
+    showToast(`Password reset link sent to ${email}! (Demo only)`, "success");
+  });
+
+  /* ──────────────────────────────────────────────────────
+     SOCIAL BUTTONS (DEMO)
+  ────────────────────────────────────────────────────── */
+  document.getElementById("googleLoginBtn").addEventListener("click", () => {
+    showToast("Google sign-in is not yet configured. Use email & password.", "error");
+  });
+  document.getElementById("facebookLoginBtn").addEventListener("click", () => {
+    showToast("Facebook sign-in is not yet configured. Use email & password.", "error");
+  });
+
+  /* ──────────────────────────────────────────────────────
+     REAL-TIME FIELD VALIDATION (clear error on type)
+  ────────────────────────────────────────────────────── */
+  ["loginEmail","loginPassword","regName","regEmail","regPassword","regConfirm"].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("input", () => {
+      el.classList.remove("error");
+      // Clear associated wrap error
+      const wrap = el.parentElement;
+      if (wrap.classList.contains("password-wrap")) wrap.classList.remove("error");
+    });
+  });
+
+  /* Match check on confirm password field */
+  document.getElementById("regConfirm").addEventListener("input", function() {
+    const pwd     = document.getElementById("regPassword").value;
+    const confirm = this.value;
+    const wrap    = document.getElementById("regConfirmWrap");
+    const err     = document.getElementById("regConfirmError");
+    if (confirm && pwd && confirm !== pwd) {
+      wrap.classList.add("error");
+      err.textContent = "Passwords do not match.";
+    } else {
+      wrap.classList.remove("error");
+      err.textContent = "";
+      if (confirm && pwd === confirm) this.classList.add("success");
+    }
+  });
+
+  /* ──────────────────────────────────────────────────────
+     INIT
+  ────────────────────────────────────────────────────── */
+  renderAuthState();
+
+  // Pre-fill login tab if ?mode=register is in URL
+  const urlMode = new URLSearchParams(window.location.search).get("mode");
+  if (urlMode === "register") switchTab("register");
+  </script>
+</body>
+</html>

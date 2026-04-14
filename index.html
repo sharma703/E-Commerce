@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Megacart – Shop Smart, Live Better</title>
+
+  <!-- ── AUTH GUARD ─────────────────────────────────────
+       Runs synchronously (before CSS/JS load) so there is
+       zero flash of the store for unauthenticated users.
+  ──────────────────────────────────────────────────── -->
+  <script>
+    (function () {
+      try {
+        var user = JSON.parse(localStorage.getItem('megacart_user_v1'));
+        if (!user || !user.email) {
+          window.location.replace('login.html?redirect=index.html');
+        }
+      } catch (e) {
+        window.location.replace('login.html?redirect=index.html');
+      }
+    })();
+  </script>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header id="siteHeader">
+  <nav class="navbar-top">
+    <div class="nav-top-inner">
+
+      <a href="#" class="nav-logo" id="logoLink">
+        <span class="logo-text">megacart</span><span class="logo-dot">.in</span>
+      </a>
+
+      <div class="nav-delivery d-none d-md-flex">
+        <i class="bi bi-geo-alt-fill delivery-icon"></i>
+        <div class="delivery-text">
+          <span class="deliver-to">Deliver to</span>
+          <span class="deliver-loc">India</span>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="nav-search">
+        <select class="search-category" id="searchCategory">
+          <option value="all">All</option>
+          <option value="electronics">Electronics</option>
+          <option value="fashion">Fashion</option>
+          <option value="home">Home &amp; Kitchen</option>
+          <option value="books">Books</option>
+          <option value="sports">Sports</option>
+          <option value="beauty">Beauty</option>
+          <option value="toys">Toys</option>
+        </select>
+        <input type="text" id="searchInput" class="search-field" placeholder="Search Megacart..." autocomplete="off" />
+        <button class="search-btn" id="searchBtn" aria-label="Search">
+          <i class="bi bi-search"></i>
+        </button>
+      </div>
+
+      <!-- Account & Lists -->
+      <div class="nav-account d-none d-md-flex" id="accountNavBtn">
+        <a href="login.html" class="nav-link-item" id="openLoginBtn">
+          <span class="nav-label">Hello, Sign in</span>
+          <span class="nav-bold">Account &amp; Lists <i class="bi bi-chevron-down small"></i></span>
+        </a>
+      </div>
+
+      <!-- Returns & Orders -->
+      <div class="nav-orders d-none d-md-flex">
+        <a href="#" class="nav-link-item">
+          <span class="nav-label">Returns</span>
+          <span class="nav-bold">&amp; Orders</span>
+        </a>
+      </div>
+
+      <!-- Logout Button -->
+      <button class="nav-logout-btn" id="navLogoutBtn" style="display:none;"
+              onclick="handleLogout()" aria-label="Sign out">
+        <i class="bi bi-box-arrow-right"></i>
+        <span class="nav-logout-text">Sign Out</span>
+      </button>
+
+      <!-- Cart Button -->
+      <div class="nav-cart" id="cartToggleBtn" role="button" tabindex="0" aria-label="Open cart">
+        <i class="bi bi-cart3 cart-icon"></i>
+        <span class="cart-count" id="cartCount">0</span>
+        <span class="nav-bold d-none d-md-inline">Cart</span>
+      </div>
+
+      <!-- Mobile Hamburger -->
+      <button class="hamburger-btn d-flex d-md-none" id="mobileMenuBtn" aria-label="Toggle menu">
+        <i class="bi bi-list"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- SECONDARY NAV -->
+  <nav class="navbar-secondary">
+    <div class="secondary-inner">
+      <a href="#" class="sec-nav-link sec-nav-all" data-category="all"><i class="bi bi-list me-1"></i>All</a>
+      <a href="#" class="sec-nav-link" data-category="deals">Today's Deals</a>
+      <a href="#" class="sec-nav-link" data-category="electronics">Electronics</a>
+      <a href="#" class="sec-nav-link" data-category="fashion">Fashion</a>
+      <a href="#" class="sec-nav-link" data-category="home">Home &amp; Kitchen</a>
+      <a href="#" class="sec-nav-link" data-category="books">Books</a>
+      <a href="#" class="sec-nav-link" data-category="sports">Sports</a>
+      <a href="#" class="sec-nav-link" data-category="beauty">Beauty</a>
+      <a href="#" class="sec-nav-link" data-category="toys">Toys</a>
+      <a href="#" class="sec-nav-link prime-link"><i class="bi bi-lightning-charge-fill me-1"></i>Prime</a>
+      <a href="db-admin.html" class="sec-nav-link" style="color:#ff9900;font-weight:700;"><i class="bi bi-database-fill me-1"></i>DB Admin</a>
+    </div>
+  </nav>
+
+  <!-- Mobile Dropdown Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="login.html" class="mobile-menu-link" id="mobileAuthLink" style="color: var(--mc-orange); font-weight:700;"><i class="bi bi-person-circle me-2"></i>Sign In / Create Account</a>
+    <a href="#" class="mobile-menu-link" data-category="all">All Categories</a>
+    <a href="#" class="mobile-menu-link" data-category="deals">Today's Deals</a>
+    <a href="#" class="mobile-menu-link" data-category="electronics">Electronics</a>
+    <a href="#" class="mobile-menu-link" data-category="fashion">Fashion</a>
+    <a href="#" class="mobile-menu-link" data-category="home">Home &amp; Kitchen</a>
+    <a href="#" class="mobile-menu-link" data-category="books">Books</a>
+    <a href="#" class="mobile-menu-link" data-category="sports">Sports</a>
+    <a href="#" class="mobile-menu-link" data-category="beauty">Beauty</a>
+    <a href="#" class="mobile-menu-link" data-category="toys">Toys</a>
+    <a href="db-admin.html" class="mobile-menu-link" style="color:var(--mc-orange);font-weight:700;"><i class="bi bi-database-fill me-2"></i>DB Admin</a>
+    <a href="#" class="mobile-menu-link" id="mobileLogoutLink"
+       style="display:none; color:#cc0c39; font-weight:700; border-top: 1px solid #444;"
+       onclick="event.preventDefault(); handleLogout();">
+      <i class="bi bi-box-arrow-right me-2"></i>Sign Out
+    </a>
+  </div>
+</header>
+
+<!-- SLIDE-OUT CART PANEL -->
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-panel" id="cartPanel" aria-label="Shopping cart">
+  <div class="cart-panel-header">
+    <h2><i class="bi bi-cart3 me-2"></i>Your Cart</h2>
+    <button class="cart-close-btn" id="cartCloseBtn" aria-label="Close cart"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div class="cart-panel-body" id="cartItems">
+    <div class="cart-empty" id="cartEmpty">
+      <i class="bi bi-cart-x"></i>
+      <p>Your cart is empty</p>
+      <span>Add items to get started</span>
+    </div>
+  </div>
+  <div class="cart-panel-footer" id="cartFooter" style="display:none;">
+    <div class="cart-subtotal">
+      <span>Subtotal (<span id="cartItemCount">0</span> items):</span>
+      <strong id="cartSubtotal">&#8377;0.00</strong>
+    </div>
+    <button class="btn-checkout" id="checkoutBtn">Proceed to Checkout</button>
+  </div>
+</aside>
+
+<!-- TOAST -->
+<div class="mc-toast" id="mcToast"></div>
+
+<!-- MAIN -->
+<main id="pageMain">
+
+  <!-- HERO CAROUSEL -->
+  <section class="hero-section" aria-label="Featured banners">
+    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="4500">
+      <div class="carousel-indicators" id="carouselIndicators"></div>
+      <div class="carousel-inner" id="carouselInner"></div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- SEARCH RESULTS -->
+  <section class="mc-section" id="searchResultsSection" style="display:none;">
+    <div class="section-header">
+      <h2 class="section-title" id="searchResultsTitle">Search Results</h2>
+      <button class="clear-search-btn" id="clearSearchBtn"><i class="bi bi-x-circle me-1"></i>Clear</button>
+    </div>
+    <div class="products-grid" id="searchResultsGrid"></div>
+  </section>
+
+  <!-- HOME CONTENT -->
+  <div id="homeContent">
+    <section class="mc-section">
+      <h2 class="section-title">Shop by Category</h2>
+      <div class="category-grid" id="categoryGrid"></div>
+    </section>
+
+    <section class="mc-section new-arrivals-section">
+      <div class="section-header">
+        <h2 class="section-title"><i class="bi bi-rocket-takeoff-fill me-2" style="color:var(--mc-green);"></i>New Arrivals 2025</h2>
+        <a href="#" class="see-all-link" data-filter="new-launch">See all new</a>
+      </div>
+      <div class="scroll-row-wrap">
+        <button class="scroll-arrow scroll-left" data-target="newArrivalsRow" aria-label="Scroll left"><i class="bi bi-chevron-left"></i></button>
+        <div class="scroll-row" id="newArrivalsRow"></div>
+        <button class="scroll-arrow scroll-right" data-target="newArrivalsRow" aria-label="Scroll right"><i class="bi bi-chevron-right"></i></button>
+      </div>
+    </section>
+
+    <section class="mc-section">
+      <div class="section-header">
+        <h2 class="section-title">Best Sellers</h2>
+        <a href="#" class="see-all-link" data-filter="bestseller">See all</a>
+      </div>
+      <div class="scroll-row-wrap">
+        <button class="scroll-arrow scroll-left" data-target="bestSellersRow" aria-label="Scroll left"><i class="bi bi-chevron-left"></i></button>
+        <div class="scroll-row" id="bestSellersRow"></div>
+        <button class="scroll-arrow scroll-right" data-target="bestSellersRow" aria-label="Scroll right"><i class="bi bi-chevron-right"></i></button>
+      </div>
+    </section>
+
+    <section class="mc-section deals-section">
+      <div class="section-header">
+        <h2 class="section-title"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>Deals of the Day</h2>
+        <a href="#" class="see-all-link" data-filter="deal">See all deals</a>
+      </div>
+      <div class="scroll-row-wrap">
+        <button class="scroll-arrow scroll-left" data-target="dealsRow" aria-label="Scroll left"><i class="bi bi-chevron-left"></i></button>
+        <div class="scroll-row" id="dealsRow"></div>
+        <button class="scroll-arrow scroll-right" data-target="dealsRow" aria-label="Scroll right"><i class="bi bi-chevron-right"></i></button>
+      </div>
+    </section>
+
+    <section class="mc-section">
+      <div class="section-header">
+        <h2 class="section-title">Recommended for You</h2>
+        <a href="#" class="see-all-link">See all</a>
+      </div>
+      <div class="products-grid" id="recommendedGrid"></div>
+    </section>
+  </div>
+
+  <!-- PROMO STRIP -->
+  <section class="promo-strip">
+    <div class="promo-item"><i class="bi bi-truck"></i><div><strong>Free Delivery</strong><span>On orders above &#8377;499</span></div></div>
+    <div class="promo-item"><i class="bi bi-arrow-return-left"></i><div><strong>Easy Returns</strong><span>30-day return policy</span></div></div>
+    <div class="promo-item"><i class="bi bi-shield-check"></i><div><strong>Secure Payments</strong><span>100% safe &amp; secure</span></div></div>
+    <div class="promo-item"><i class="bi bi-headset"></i><div><strong>24/7 Support</strong><span>Dedicated customer care</span></div></div>
+  </section>
+
+</main>
+
+<!-- PRODUCT DETAIL MODAL -->
+<div class="modal-overlay" id="productModalOverlay"></div>
+<div class="product-modal" id="productModal" role="dialog" aria-modal="true" aria-labelledby="modalProductTitle">
+  <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close product detail"><i class="bi bi-x-lg"></i></button>
+  <div class="product-modal-inner">
+    <div class="modal-gallery">
+      <img src="" alt="" id="modalMainImage" class="modal-main-img" />
+      <div class="modal-thumbnails" id="modalThumbnails"></div>
+    </div>
+    <div class="modal-details">
+      <span class="modal-badge" id="modalBadge"></span>
+      <h2 id="modalProductTitle"></h2>
+      <div class="modal-meta">
+        <span class="modal-category" id="modalCategory"></span>
+        <span class="modal-separator">|</span>
+        <span id="modalRating"></span>
+      </div>
+      <div class="modal-price-block">
+        <span class="modal-price" id="modalPrice"></span>
+        <span class="modal-original-price" id="modalOriginalPrice"></span>
+        <span class="modal-discount" id="modalDiscount"></span>
+      </div>
+      <p class="modal-description" id="modalDescription"></p>
+      <ul class="modal-features" id="modalFeatures"></ul>
+      <div class="modal-stock" id="modalStock"></div>
+      <div class="modal-qty-row">
+        <label>Qty:</label>
+        <div class="qty-control">
+          <button class="qty-btn" id="modalQtyDec">&#8722;</button>
+          <span class="qty-value" id="modalQtyVal">1</span>
+          <button class="qty-btn" id="modalQtyInc">+</button>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-add-cart-modal" id="modalAddToCart"><i class="bi bi-cart-plus me-2"></i>Add to Cart</button>
+        <button class="btn-buy-now"><i class="bi bi-bolt me-2"></i>Buy Now</button>
+      </div>
+      <div class="modal-delivery">
+        <i class="bi bi-truck me-2"></i>
+        <span>Free delivery by <strong id="modalDeliveryDate"></strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-top-bar" id="backToTop" role="button" tabindex="0">Back to top</div>
+  <div class="footer-main">
+    <div class="footer-columns">
+      <div class="footer-col">
+        <h4>Get to Know Us</h4>
+        <ul>
+          <li><a href="#">About Megacart</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Press Releases</a></li>
+          <li><a href="#">Megacart Cares</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect With Us</h4>
+        <ul>
+          <li><a href="#"><i class="bi bi-facebook me-2"></i>Facebook</a></li>
+          <li><a href="#"><i class="bi bi-twitter-x me-2"></i>Twitter / X</a></li>
+          <li><a href="#"><i class="bi bi-instagram me-2"></i>Instagram</a></li>
+          <li><a href="#"><i class="bi bi-youtube me-2"></i>YouTube</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Make Money With Us</h4>
+        <ul>
+          <li><a href="#">Sell on Megacart</a></li>
+          <li><a href="#">Become an Affiliate</a></li>
+          <li><a href="#">Advertise Your Products</a></li>
+          <li><a href="#">Self-Publish with Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Let Us Help You</h4>
+        <ul>
+          <li><a href="#">Your Account</a></li>
+          <li><a href="#">Your Orders</a></li>
+          <li><a href="#">Shipping Rates &amp; Policies</a></li>
+          <li><a href="#">Returns &amp; Replacements</a></li>
+          <li><a href="#">Help</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-divider"></div>
+  <div class="footer-bottom">
+    <div class="footer-logo"><span class="logo-text">megacart</span><span class="logo-dot">.in</span></div>
+    <div class="footer-policies">
+      <a href="#">Conditions of Use</a>
+      <a href="#">Privacy Notice</a>
+      <a href="#">Interest-Based Ads</a>
+    </div>
+    <p class="footer-copy">&copy; 2024&ndash;2025, Megacart.in, Inc. or its affiliates. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- AUTH MODAL -->
+<div class="auth-overlay" id="authOverlay"></div>
+<div class="auth-modal" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <button class="auth-close-btn" id="authCloseBtn" aria-label="Close"><i class="bi bi-x-lg"></i></button>
+  <div class="auth-logo"><span class="logo-text">megacart</span><span class="logo-dot">.in</span></div>
+
+  <div class="auth-view" id="loginView" style="display:block;">
+    <h2 class="auth-title" id="authTitle">Sign In</h2>
+    <form id="loginForm" novalidate>
+      <div class="auth-field">
+        <label for="loginEmail">Email or mobile phone number</label>
+        <input type="text" id="loginEmail" class="auth-input" placeholder="you@example.com" autocomplete="email" />
+        <span class="field-error" id="loginEmailError"></span>
+      </div>
+      <div class="auth-field">
+        <label for="loginPassword">Password</label>
+        <div class="password-wrap" id="loginPwdWrap">
+          <input type="password" id="loginPassword" class="auth-input" placeholder="At least 6 characters" autocomplete="current-password" />
+          <button type="button" class="toggle-pwd-btn" data-target="loginPassword">Show</button>
+        </div>
+        <span class="field-error" id="loginPasswordError"></span>
+      </div>
+      <button type="submit" class="auth-submit-btn">Sign In</button>
+    </form>
+    <p class="auth-terms">By continuing, you agree to Megacart's <a href="#">Conditions of Use</a> and <a href="#">Privacy Notice</a>.</p>
+    <div class="auth-divider"><span>New to Megacart?</span></div>
+    <button class="auth-switch-btn" id="goToRegister"><i class="bi bi-person-plus me-2"></i>Create your Megacart account</button>
+  </div>
+
+  <div class="auth-view" id="registerView" style="display:none;">
+    <h2 class="auth-title">Create Account</h2>
+    <form id="registerForm" novalidate>
+      <div class="auth-field">
+        <label for="regName">Your name</label>
+        <input type="text" id="regName" class="auth-input" placeholder="First and last name" autocomplete="name" />
+        <span class="field-error" id="regNameError"></span>
+      </div>
+      <div class="auth-field">
+        <label for="regEmail">Email address</label>
+        <input type="email" id="regEmail" class="auth-input" placeholder="you@example.com" autocomplete="email" />
+        <span class="field-error" id="regEmailError"></span>
+      </div>
+      <div class="auth-field">
+        <label for="regPhone">Mobile number</label>
+        <input type="tel" id="regPhone" class="auth-input" placeholder="10-digit mobile number" autocomplete="tel" maxlength="10" inputmode="numeric" />
+        <span class="field-error" id="regPhoneError"></span>
+      </div>
+      <div class="auth-field">
+        <label for="regPassword">Password</label>
+        <div class="password-wrap" id="regPwdWrap">
+          <input type="password" id="regPassword" class="auth-input" placeholder="At least 6 characters" autocomplete="new-password" />
+          <button type="button" class="toggle-pwd-btn" data-target="regPassword">Show</button>
+        </div>
+        <span class="field-error" id="regPasswordError"></span>
+      </div>
+      <div class="auth-field">
+        <label for="regConfirm">Re-enter password</label>
+        <input type="password" id="regConfirm" class="auth-input" placeholder="Re-enter your password" autocomplete="new-password" />
+        <span class="field-error" id="regConfirmError"></span>
+      </div>
+      <button type="submit" class="auth-submit-btn">Create your Megacart account</button>
+    </form>
+    <p class="auth-terms">By creating an account, you agree to Megacart's <a href="#">Conditions of Use</a> and <a href="#">Privacy Notice</a>.</p>
+    <div class="auth-divider"><span>Already have an account?</span></div>
+    <button class="auth-switch-btn" id="goToLogin"><i class="bi bi-box-arrow-in-right me-2"></i>Sign in to your account</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="db.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
